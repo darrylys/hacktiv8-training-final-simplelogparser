@@ -17,6 +17,10 @@
         <junit.version>5.11.4</junit.version>
         <assertj.version>3.26.3</assertj.version>
         <archunit.version>1.3.0</archunit.version>
+        <javafx.version>21.0.5</javafx.version>
+        <richtextfx.version>0.11.3</richtextfx.version>
+        <testfx.version>4.0.18</testfx.version>
+        <monocle.version>21.0.2</monocle.version>
 
         <!-- Surefire tag selection; profiles override these. -->
         <test.groups></test.groups>
@@ -36,6 +40,23 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- JavaFX natives for Windows, Linux and macOS x64 in one shaded jar (A2). mac-aarch64 is left out: its
+             natives use the same file names as the mac x64 ones, so one jar can hold only one of them. -->
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-base</artifactId><version>${javafx.version}</version><classifier>win</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-base</artifactId><version>${javafx.version}</version><classifier>mac</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-base</artifactId><version>${javafx.version}</version><classifier>linux</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-graphics</artifactId><version>${javafx.version}</version><classifier>win</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-graphics</artifactId><version>${javafx.version}</version><classifier>mac</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-graphics</artifactId><version>${javafx.version}</version><classifier>linux</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-controls</artifactId><version>${javafx.version}</version><classifier>win</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-controls</artifactId><version>${javafx.version}</version><classifier>mac</classifier></dependency>
+        <dependency><groupId>org.openjfx</groupId><artifactId>javafx-controls</artifactId><version>${javafx.version}</version><classifier>linux</classifier></dependency>
+        <dependency>
+            <groupId>org.fxmisc.richtext</groupId>
+            <artifactId>richtextfx</artifactId>
+            <version>${richtextfx.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -52,6 +73,19 @@
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
             <version>${archunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- used only by @Tag("gui") tests, which run under -Pgui -->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>${testfx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>openjfx-monocle</artifactId>
+            <version>${monocle.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -82,6 +116,15 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- development only: mvnw javafx:run; the packaged jar starts through Main -->
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>id.project.logs.simplelogparser.gui.SlpGuiApp</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.0</version>
@@ -96,6 +139,10 @@
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>id.project.logs.simplelogparser.Main</mainClass>
+                                    <manifestEntries>
+                                        <!-- JDK 22+: lets JavaFX load its natives without a warning; ignored by 21 -->
+                                        <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+                                    </manifestEntries>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
@@ -129,10 +176,14 @@
         </profile>
         <profile>
             <!-- TestFX smoke tests; the GUI and its dependencies are added in a later pass. -->
+            <!-- TestFX smoke tests, headless through Monocle; pass -Dheadless=false to watch them on the desktop -->
             <id>gui</id>
             <properties>
                 <test.groups>gui</test.groups>
                 <test.excludedGroups></test.excludedGroups>
+                <test.argLine>-Dtestfx.robot=glass -Dtestfx.headless=${headless} -Dprism.order=sw -Dprism.text=t2k -Dglass.platform=${glass.platform} -Dmonocle.platform=Headless -Djava.awt.headless=true</test.argLine>
+                <headless>true</headless>
+                <glass.platform>Monocle</glass.platform>
             </properties>
         </profile>
     </profiles>

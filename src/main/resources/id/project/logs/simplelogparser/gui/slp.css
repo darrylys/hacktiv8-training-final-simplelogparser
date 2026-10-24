@@ -1,0 +1,54 @@
+/* simplelogparser GUI */
+
+.search-pane {
+    -fx-background-color: derive(-fx-base, 8%);
+    -fx-border-color: transparent transparent derive(-fx-base, -15%) transparent;
+}
+
+.hint {
+    -fx-text-fill: derive(-fx-text-base-color, 45%);
+}
+
+.validation {
+    -fx-text-fill: #c62828;
+}
+
+.capped-banner {
+    -fx-background-color: #fff3cd;
+    -fx-text-fill: #664d03;
+    -fx-padding: 4 8 4 8;
+}
+
+.list-cell {
+    -fx-font-family: "Consolas", "Menlo", "DejaVu Sans Mono", monospace;
+}
+
+.list-cell.level-error, .list-cell.level-fatal {
+    -fx-text-fill: #c62828;
+}
+
+.list-cell.level-warn {
+    -fx-text-fill: #9a6700;
+}
+
+.list-cell.level-debug, .list-cell.level-trace {
+    -fx-text-fill: derive(-fx-text-base-color, 35%);
+}
+
+.list-cell:selected {
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+.detail-area {
+    -fx-font-family: "Consolas", "Menlo", "DejaVu Sans Mono", monospace;
+    -fx-font-size: 12px;
+}
+
+.detail-area .text.match {
+    -rtfx-background-color: #ffe066;
+    -fx-font-weight: bold;
+}
+
+.status-bar {
+    -fx-border-color: derive(-fx-base, -15%) transparent transparent transparent;
+}

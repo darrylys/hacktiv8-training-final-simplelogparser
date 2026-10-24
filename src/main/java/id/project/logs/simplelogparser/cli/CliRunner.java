@@ -94,7 +94,7 @@ public final class CliRunner {
             return ExitCode.MATCH;
         }
         if (cmd.gui) {
-            err.println("slp: the GUI is not available in this build");
+            err.println("slp: --gui is handled by the launcher; run without CLI options to open the GUI");
             return ExitCode.ERROR;
         }
 

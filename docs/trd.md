@@ -94,6 +94,16 @@ Before any feature work, verify on the Windows workstation (PRD risk 3):
 
 If 1 fails, fall back to JavaFX 17 LTS or to launching with `--module-path`; record the outcome in this document.
 
+**Outcome (2026-10-24, Windows 11, JDK 25.0.2, JavaFX 21.0.5, RichTextFX 0.11.3):**
+
+1. Passed. `java -jar simplelogparser-1.0-SNAPSHOT.jar` (with or without `--gui <file>`) opens the window through `Main`. The only startup message is the expected "unnamed module" warning; the manifest carries `Enable-Native-Access: ALL-UNNAMED` so JDK 22+ does not warn about JavaFX loading its natives.
+2. Passed. A 16 MB entry is loaded into the detail pane in about 1.4 s (headless Monocle, software rendering), and the FX thread answers within about 50 ms afterwards (`SearchFlowGuiTest`).
+3. Passed with margin: a field search over a generated 5 GB file ran at about 1 GB/s on 16 cores (`ScalePerfTest`, file likely in the OS cache).
+
+Change to A2: the `mac` and `mac-aarch64` JavaFX jars put their native libraries at the same paths (`libglass.dylib`, ...), so one shaded jar can hold only one of them. The jar bundles `win`, `linux` and `mac` (x64); Apple Silicon needs an x64 JDK (Rosetta) or a separate build with the `mac-aarch64` classifier. The jar is about 12.6 MB.
+
+TestFX smoke tests run headless with Monocle 21.0.2 (`.\mvnw.cmd test -Pgui`); `-Dheadless=false -Dglass.platform=win` runs them on the desktop.
+
 ## 3. Package structure
 
 Root package: `id.project.logs.simplelogparser` (abbreviated `slp` below).
