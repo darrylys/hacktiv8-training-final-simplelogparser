@@ -1,0 +1,31 @@
+	at example.Truncated.start(Truncated.java:10)
+orphan line before the first header mentioning ORPHAN-TOKEN
+[e1:r1:merchantId: 100, note: has]bracket] 2026-10-19 08:00:00.000 [main] INFO  c.e.Bracket - bracket inside mdc
+[e2:r2:merchantId: 200] 2026-10-19 08:00:01.000 [main] INFO  c.e.OnlyRequest - 
+-- REQUEST --
+|> GET /only/request?token=REQONLY
+[e3:r3:merchantId: 300] 2026-10-19 08:00:02.000 [main] INFO  c.e.OnlyResponse - 
+-- RESPONSE --
+|< 500 Internal Server Error
+|< {"status": 503, "error":"RESPONLY"}
+[e4:r4:merchantId: 400] 2026-10-19 08:00:03.000 [main] INFO  c.e.Duplicated - 
+-- REQUEST --
+|> first request DUPREQ1
+-- RESPONSE --
+|< first response DUPRESP1
+-- REQUEST --
+|> second request DUPREQ2
+-- RESPONSE --
+|< second response DUPRESP2
+[e5:r5:merchantId: 500, city: Zürich] 2026-10-19 08:00:04.000 [main] WARN  c.e.Unicode - café 日本語 ünïcödé MULTIBYTE
+[e6:r6:merchantId: 600] 2026-10-19 08:00:05.000 [main] ERROR c.e.Trace - failure with nested log line
+	at example.Service.run(Service.java:1)
+[x:y:merchantId: 601] 2026-10-19 08:00:05.500 [inner] INFO  c.e.Inner - logged log line inside a stack trace
+	at example.Service.call(Service.java:2)
+[e7:r7:merchantId: 700] 2026-10-19 08:00:06.000 [main] INFO  c.e.Span - SPANSTART first line
+second line SPANEND
+[e8:r8:merchantId: 800] 2026-10-19 08:00:07.000 [main] INFO  c.e.Span - SPANSTART only
+[e9:r9:merchantId: 900] 2026-10-19 08:00:08.000 [main] INFO  c.e.Span - SPANEND only
+[::] 2026-10-19 08:00:09.000 [main] TRACE c.e.Empty - empty mdc
+[onlyone] 2026-10-19 08:00:10.000 [main] INFO  c.e.One - single positional token
+[merchantId: 1000, shiftId: 5] 2026-10-19 08:00:11.000 [main] INFO  c.e.NoIds - no positional ids

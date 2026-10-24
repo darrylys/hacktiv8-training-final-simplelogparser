@@ -1,0 +1,27 @@
+[corrA1:reqA1:merchantId: 786, merchantUserId: 4118, shiftId: 147581, isShiftOpen: true, outletId: 1665] 2026-10-18 00:00:04.537 [http-nio-8934-exec-6] INFO  i.h.p.a.c.i.l.f.GistRequestResponseLoggingFilter - 
+-- REQUEST --
+|> GET /pos-revamp-2/api/v1/pos/payment?orderId=2837537&lastUpdate=
+|>
+
+-- RESPONSE --
+|< 200 OK
+|<
+|< {"data":{"payments":[{"id":2733823,"totalAmount":24000.0,"status":"paid"}]},"status":200}
+[corrB1:reqB1:] 2026-10-18 00:00:35.893 [http-nio-8934-exec-2] DEBUG i.h.p.a.c.i.l.f.GistRequestResponseLoggingFilter - >> Request BEGIN >>
+[corrB1:reqB1:merchantId: 1242, merchantUserId: 3009, shiftId: 147571, isShiftOpen: true, outletId: 1307] 2026-10-18 00:00:35.926 [http-nio-8934-exec-4] INFO  i.h.p.a.c.i.l.f.GistRequestResponseLoggingFilter - 
+-- REQUEST --
+|> POST /pos-revamp-2/api/v1/pos/orders
+|> {"outletId":1307,"items":[{"sku":"KOPI-01","qty":2}]}
+
+-- RESPONSE --
+|< 201 Created
+|<
+|< {"data":{"orderId=2837537":true,"status":"created"}}
+[corrD1:reqD1:merchantId: 786, merchantUserId: 3414, shiftId: 147999, isShiftOpen: false, outletId: 1475] 2026-10-18 00:00:43.373 [http-nio-8934-exec-6] ERROR i.h.p.a.c.i.e.a.s.JsonApiExceptionHandler - Unhandled exception
+example.errors.ResourceNotFound: NOT_FOUND : Opened Outlet Shift
+	at example.outlets.OutletShiftService.getLastOpenShift(OutletShiftService.java:55)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:355)
+[::] 2026-10-18 03:30:01.880 [scheduling-1] WARN  i.h.p.a.j.e.k.c.JidKemayuCsvExportSyncRunnerImpl - invoice ID '3097850' has tax. Manual intervention might be required. ignoring taxes
+[corrC1:reqC1:merchantId: 786, merchantUserId: 4118, shiftId: 147581, isShiftOpen: true, outletId: 1665] 2026-10-18 03:30:02.326 [http-nio-8934-exec-1] DEBUG i.h.p.a.c.i.l.f.GistRequestResponseLoggingFilter - << Request COMPLETED <<
+[::] 2026-10-18 03:30:02.400 [scheduling-1] ERROR i.h.p.a.j.s.s.SyncTrxServiceImpl - This should be impossible!! payment id 892195 in jidPayment 880649 is not found!

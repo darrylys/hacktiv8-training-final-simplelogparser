@@ -1,0 +1,11 @@
+{"@timestamp":"2026-10-22T01:04:28.4980168Z","log.level":"INFO","process.thread.name":"main","log.logger":"example.MainApplication","message":"Starting MainApplication using Java 25"}
+{"@timestamp":"2026-10-22T01:04:28.5640147Z","log.level":"DEBUG","process.thread.name":"main","log.logger":"example.MainApplication","message":"Running with Spring Boot v3.4.5"}
+
+{"@timestamp":"2026-10-22T01:04:49.6088461Z","log.level":"INFO","process.thread.name":"main","log.logger":"example.logo","message":"[10.0.0.1]:5701 [dev]\n    o    o\n    |    |   BANNERLINE\n    o----o"}
+{"@timestamp":"2026-10-22T08:55:47.283007Z","log.level":"INFO","process.thread.name":"http-nio-18932-exec-7","traceId":"trace-AAA","shiftId":"4891","service.name":"PromoQuery","requestId":"req-AAA","merchantExternalId":"M-1","correlationId":"corr-AAA","message":"promo query done"}
+this line is not json at all
+{"@timestamp":"2026-10-22T08:55:59.8502368Z","log.level":"INFO","process.thread.name":"http-nio-18932-exec-8","traceId":"trace-BBB","shiftId":4891,"service.name":"CreateSalesOrderCommand","requestId":"req-BBB","logData":{"requestBody":{"orderId":2837537,"items":[1, 2]},"responseStatusCode":201},"message":"order \"created\" caf\u00e9"}
+{"@timestamp":"2026-10-23T09:48:32.479759331Z","log.level":"ERROR","process.thread.name":"http-nio-8933-exec-1","traceId":"trace-BBB","shiftId":"1560","merchantExternalId":null,"enabled":true,"message":"refund failed\nline two of the error"}
+   
+{"@timestamp":"2026-10-23T09:48:33.0Z","log.level":"WARN","process.thread.name":"http-nio-8933-exec-1","traceId":"trace-CCC","message":"slow path"}
+{"@timestamp":"2026-10-23T09:48:34.0Z","log.level":"INFO","process.thread.name":"main","message":"truncated last line

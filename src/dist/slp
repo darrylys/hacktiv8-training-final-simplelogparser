@@ -1,0 +1,9 @@
+#!/bin/sh
+# Runs simplelogparser from the jar next to this script. Requires Java 21+ on PATH or JAVA_HOME.
+dir=$(cd "$(dirname "$0")" && pwd)
+jar="$dir/simplelogparser-1.0-SNAPSHOT.jar"
+if [ -n "$JAVA_HOME" ]; then
+  exec "$JAVA_HOME/bin/java" -jar "$jar" "$@"
+else
+  exec java -jar "$jar" "$@"
+fi

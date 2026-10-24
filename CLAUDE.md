@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-`simplelogparser` (`id.project.logs:simplelogparser`) is a fresh Maven skeleton: `src/main/java`, `src/main/resources` and `src/test/java` exist but are empty, and `pom.xml` declares no dependencies or plugins. Compiler target is Java 21 (the local JDK is 25).
+`simplelogparser` (`id.project.logs:simplelogparser`) implements the core and CLI of `docs/trd.md` (TRD steps 1–6); the JavaFX GUI (step 7) is not built yet, so OpenJFX/RichTextFX/TestFX are not in `pom.xml` and running with no arguments or `--gui` exits 2. Specs: `docs/prd.md` (requirements, edge cases, ACs), `docs/trd.md` (design, assumptions A1–A27), `docs/trd-rejected.md` (alternatives not to use). Compiler `release` is 21 (the local JDK is 25).
+
+Packages under `id.project.logs.simplelogparser`: `io` (read-only `LogFile`, `ByteLineReader`), `model`, `format` (+`plain`, `json`), `query`, `scan` (`ScanEngine`, chunk ownership rule in `ChunkWorker`, ordered merge), `settings`, `cli` (picocli). Core packages must not depend on `cli`/picocli; `ArchitectureTest` enforces this and the read-only rules.
 
 ## Build
 
@@ -18,7 +20,12 @@ $env:JAVA_HOME='C:\programs\jdk-25.0.2'; .\mvnw.cmd test -Dtest=ClassName#method
 
 From Git Bash use `./mvnw` with `JAVA_HOME=/c/programs/jdk-25.0.2`. JDK 25 prints `sun.misc.Unsafe` / `System::load` warnings from Maven's own libraries; they are harmless.
 
-No test framework is configured yet; add JUnit (and the Surefire plugin if needed) to `pom.xml` before writing tests.
+Tests: JUnit 5 + AssertJ + ArchUnit. Surefire runs `*Test` and `*IT` classes in-process; tags `perf` and `gui` are excluded by default. `-Pperf` runs only `ScalePerfTest` with `-Xmx512m` (generates 1 GB and 5 GB files in the system temp dir; takes several minutes). `.\mvnw.cmd package` builds the shaded jar `target\simplelogparser-1.0-SNAPSHOT.jar` (`java -jar ... --help`); `src/dist/slp(.cmd)` are wrapper scripts.
+
+Test notes:
+- Fixtures in `src/test/resources/fixtures/` depend on exact bytes (trailing spaces after `Filter - `, CRLF, BOM, invalid UTF-8, a JSON line without trailing newline, literal `é` escapes). Editing tools may strip trailing whitespace or decode escapes, so check bytes after editing them (`.gitattributes` marks them `-text`). Expected values in `CliSearchIT` are first-line numbers of the fixture entries.
+- `ScanEquivalenceTest` compares the engine with `ReferenceScanner` (test oracle) for chunk sizes down to 1 byte; run it after touching framing, alignment or the prefilter.
+- JDK 25's regex engine handles `(a+)+$` quickly, so regex-guard tests use `(.*a){12}x` against 80 `a`s.
 
 ## Input log formats
 
