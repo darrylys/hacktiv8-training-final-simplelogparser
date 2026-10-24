@@ -137,6 +137,39 @@ class SearchFlowGuiTest {
     }
 
     @Test
+    void jsonEscapesAreRenderedAndWordWrapIsRemembered(FxRobot robot) throws Exception {
+        FileTab tab = open(robot, Fixtures.path("json/basic.log"));
+        robot.interact(() -> {
+            tab.viewModel().fieldRows().get(0).fieldProperty().set("traceId");
+            tab.viewModel().fieldRows().get(0).valuesProperty().set("trace-BBB");
+        });
+        robot.clickOn("#search");
+        awaitScan(tab);
+        assertThat(on(robot, () -> tab.controller().hits().stream().map(Hit::lineNumber).toList())).containsExactly(7L, 8L);
+
+        robot.interact(() -> tab.results().list().getSelectionModel().select(1));
+        StyleClassedTextArea area = tab.detail().area();
+        waitFor(() -> area.getText().contains("\"enabled\":true"), 10);
+        String shown = area.getText();
+        String rawPart = shown.substring(shown.indexOf("{\"@timestamp\""));
+        assertThat(rawPart).contains("\"message\":\"refund failed\nline two of the error\"").doesNotContain("failed\\n");
+
+        // copying the whole entry still gives the original line with its escapes
+        robot.clickOn("#results");
+        robot.press(KeyCode.CONTROL).press(KeyCode.C).release(KeyCode.C).release(KeyCode.CONTROL);
+        waitFor(() -> String.valueOf(Clipboard.getSystemClipboard().getString()).contains("refund failed\\nline two"), 5);
+
+        // word wrap: off by default, toggled by the checkbox, saved in the settings
+        boolean before = on(robot, area::isWrapText);
+        robot.clickOn("#word-wrap");
+        waitFor(() -> area.isWrapText() != before, 5);
+        assertThat(new SettingsStore(dir.resolve("settings")).load().wordWrap()).isEqualTo(!before);
+        robot.clickOn("#word-wrap");
+        waitFor(() -> area.isWrapText() == before, 5);
+        assertThat(new SettingsStore(dir.resolve("settings")).load().wordWrap()).isEqualTo(before);
+    }
+
+    @Test
     void cancelStopsALongScanWithinTwoSeconds(FxRobot robot) throws Exception {
         Path evil = dir.resolve("evil.log");
         StringBuilder sb = new StringBuilder();

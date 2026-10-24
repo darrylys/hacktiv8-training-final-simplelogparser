@@ -28,3 +28,5 @@ java -jar target\simplelogparser-1.0-SNAPSHOT.jar
 | 15 | Start a search, and before it finishes change the query and search again. | Only the second query's results are listed. |
 | 16 | Edit > Copy All Results on a result set over 50 MB. | A confirmation dialog appears first. Cancel copies nothing. |
 | 17 | After any searches, look in the log file's folder. | No new files. The log's modified time is unchanged. |
+| 18 | Open the real `log-plain.log`, search field `merchantId` = `786`, select the hit, and tick "Word wrap". | The 22 KB response line wraps to the pane width, and scrolling stays smooth. Untick it: the line goes back to one line with a horizontal scrollbar. Restart the app: the checkbox keeps its last state. |
+| 19 | In `json/basic.log`, search field `traceId` = `trace-BBB`, select the line 8 hit. | The JSON line shows `refund failed` and `line two of the error` on separate lines, with no literal `\n`. Ctrl+C on the hit, then paste into Notepad: the pasted line still contains `\n`. |

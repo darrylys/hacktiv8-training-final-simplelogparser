@@ -24,7 +24,7 @@ java -jar simplelogparser-1.0-SNAPSHOT.jar --gui app.log other.log
 - Open files with File > Open (Ctrl+O), File > Open Recent, or by dropping them on the window. Each file gets its own tab.
 - Fill in field filters (field, exact/contains/regex, comma-separated values), text or regex, scope, levels and a time range, then press Enter or Search. A bad regex or time is shown under the inputs, and Search stays disabled until it's fixed.
 - Results stream into the list while the scan runs, with a progress bar and Cancel (or Esc). At most 10,000 results are shown, and a banner says when results were capped.
-- Select a result to see the full entry with matches highlighted.
+- Select a result to see the full entry with matches highlighted. The "Word wrap" checkbox above the entry wraps long lines and is remembered. For JSON logs, `\n`, `\r` and `\t` inside string values are shown as real line breaks and tabs; copying still gives the original line.
 - Ctrl+C copies the selected entries (several are joined in file order with a blank line) or the text selected in the detail pane. Edit > Copy All Results (Ctrl+Shift+C) asks first when the results add up to more than 50 MB.
 
 ## CLI

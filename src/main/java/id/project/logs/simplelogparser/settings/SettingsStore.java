@@ -12,8 +12,9 @@ import java.util.Properties;
 
 /**
  * User settings in {@code ${user.home}/.simplelogparser/settings.properties} (A13): recent files (max 10),
- * last window size and result cap. Holds paths only, never log data (PRD 6). This is the only class allowed
- * to open a file for writing; it writes a temp file in the settings directory and moves it into place.
+ * last window size, result cap and detail-pane word wrap. Holds paths only, never log data (PRD 6). This is
+ * the only class allowed to open a file for writing; it writes a temp file in the settings directory and
+ * moves it into place.
  */
 public final class SettingsStore {
 
@@ -24,6 +25,7 @@ public final class SettingsStore {
     private static final String WIDTH = "window.width";
     private static final String HEIGHT = "window.height";
     private static final String RESULT_CAP = "resultCap";
+    private static final String WORD_WRAP = "detail.wordWrap";
 
     private final Path file;
     private final Properties props = new Properties();
@@ -92,6 +94,15 @@ public final class SettingsStore {
 
     public void setResultCap(int cap) {
         props.setProperty(RESULT_CAP, Integer.toString(cap));
+    }
+
+    /** Whether the GUI detail pane wraps long lines; off by default. */
+    public boolean wordWrap() {
+        return Boolean.parseBoolean(props.getProperty(WORD_WRAP, "false").trim());
+    }
+
+    public void setWordWrap(boolean on) {
+        props.setProperty(WORD_WRAP, Boolean.toString(on));
     }
 
     public int windowWidth(int fallback) {

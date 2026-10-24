@@ -247,7 +247,7 @@ The GUI follows a view / view-model split so that behavior is testable without a
 | `SearchViewModel` | Plain Java (JavaFX properties only, no controls). Holds query inputs: field filter rows (field, mode, values), text, regex/literal, case-sensitive, DOTALL, scope, levels, from/to. `compile()` → `CompiledQuery` or validation message shown inline before scanning (AC7). Scope selector disabled for JSON tabs. |
 | `ScanController` | Starts a scan for a tab. Cancels the running scan first and tags each scan with a generation number; batches from an older generation are dropped (edge #19). Coalesces `onHits` into the FX thread at most every 100 ms via `Platform.runLater`, so the FX thread never blocks (PRD 6). |
 | `ResultListView` | `ListView<Hit>` (virtualized), multi-select, cell shows `HitSummary`. Shows "Results capped at N" banner when `summary.capped()` (AC14). |
-| `DetailPane` | RichTextFX `StyleClassedTextArea`, read-only. On selection, a background `Task` re-reads the entry (`EntryReader`), computes highlights (`Highlighter`, guarded) and then sets text and styles on the FX thread. Shows the match text (LF line endings) with `[truncated]` marker for truncated entries. |
+| `DetailPane` | RichTextFX `StyleClassedTextArea`, read-only. On selection, a background `Task` re-reads the entry (`EntryReader`), computes highlights (`Highlighter`, guarded) and then sets text and styles on the FX thread. Shows the match text (LF line endings) with `[truncated]` marker for truncated entries. For JSON entries, `DisplayText` renders `\n`, `\r` and `\t` escapes inside string values of the raw line as line breaks and tabs and maps highlight ranges onto the rendered text (PRD 5.5, AC26). A "Word wrap" checkbox binds `wrapText`; the setting is shared by all tabs and stored by `SettingsStore` (AC25). |
 | `ClipboardService` | Copy selected entry / entries / detail-pane selection as `ClipboardContent.putString` (Unicode, edge #22). Whole-entry copies use the **original** text re-read from the file, so CRLF and non-ASCII are preserved (AC20). Multiple entries are joined in file order with one blank line, using the line ending of the first entry. **[A17]** Detail-pane partial selection copies the displayed text (LF line endings). **[A18]** "Copy all results" sums `Hit.byteLength` first; over 50 MB (configurable) it asks for confirmation (AC21). The re-read runs in a background task. |
 | `ErrorDialogs` | Maps exceptions (missing file, detection failure, I/O error) to a dialog with a clear message (edge #12). Never shows stack traces to the user. |
 
@@ -453,6 +453,8 @@ Summary lines (malformed count, regex timeouts, capped, file changed) go to stde
 | AC18 | `CliJsonOutputIT`: each line parses as a JSON object with `offset`, `line`, `entry`; `entry` equals the original text |
 | AC19 | TestFX `SearchFlowGuiTest` (`gui`) + manual checklist |
 | AC20 | `ClipboardServiceTest` builds the clipboard string from fixtures (exact bytes, CRLF, non-ASCII, multi-select order and separator); manual Notepad paste check |
+| AC25 | `SettingsStoreTest` (stored setting); `SearchFlowGuiTest` (checkbox toggles wrapping and is saved) |
+| AC26 | `DisplayTextTest` (rendering and highlight mapping); `SearchFlowGuiTest` (rendered in the pane, copy keeps escapes) |
 | AC21 | `ClipboardServiceTest`: total over threshold triggers the confirmation callback and reads nothing before confirmation |
 | AC22 | `JsonMalformedIT`: entries before and after malformed lines are returned; count reported; `--strict` → exit 2 |
 | AC23 | `HeaderlessPrefixIT` |

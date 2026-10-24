@@ -21,6 +21,7 @@ class SettingsStoreTest {
         store.addRecent(dir.resolve("log5.log"));
         store.setResultCap(500);
         store.setWindowSize(1200, 800);
+        store.setWordWrap(true);
         store.save();
 
         SettingsStore reloaded = new SettingsStore(settingsDir).load();
@@ -29,6 +30,7 @@ class SettingsStoreTest {
         assertThat(reloaded.recentFiles().get(1)).isEqualTo(dir.resolve("log11.log").toAbsolutePath().normalize());
         assertThat(reloaded.resultCap()).isEqualTo(500);
         assertThat(reloaded.windowWidth(0)).isEqualTo(1200);
+        assertThat(reloaded.wordWrap()).isTrue();
         try (Stream<Path> files = Files.list(settingsDir)) {
             assertThat(files.map(p -> p.getFileName().toString())).containsExactly("settings.properties");
         }
@@ -39,5 +41,6 @@ class SettingsStoreTest {
         SettingsStore store = new SettingsStore(dir.resolve("none")).load();
         assertThat(store.recentFiles()).isEmpty();
         assertThat(store.resultCap()).isEqualTo(SettingsStore.DEFAULT_RESULT_CAP);
+        assertThat(store.wordWrap()).isFalse();
     }
 }

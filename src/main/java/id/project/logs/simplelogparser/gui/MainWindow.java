@@ -4,6 +4,8 @@ import id.project.logs.simplelogparser.scan.ScanEngine;
 import id.project.logs.simplelogparser.settings.SettingsStore;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -38,12 +40,19 @@ public final class MainWindow {
     private final Executor background;
     private final TabPane tabs = new TabPane();
     private final Menu recent = new Menu("Open Recent");
+    /** Detail-pane word wrap, shared by all tabs and remembered across runs. */
+    private final BooleanProperty wordWrap;
 
     public MainWindow(Stage stage, SettingsStore settings, ScanEngine engine, Executor background) {
         this.stage = stage;
         this.settings = settings;
         this.engine = engine;
         this.background = background;
+        this.wordWrap = new SimpleBooleanProperty(settings.wordWrap());
+        wordWrap.addListener((o, a, on) -> {
+            settings.setWordWrap(on);
+            saveSettings();
+        });
 
         tabs.setId("tabs");
         tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
@@ -126,7 +135,7 @@ public final class MainWindow {
             }
         };
         task.setOnSucceeded(e -> {
-            FileTab tab = new FileTab(task.getValue(), engine, background, settings::resultCap);
+            FileTab tab = new FileTab(task.getValue(), engine, background, settings::resultCap, wordWrap);
             tabs.getTabs().add(tab);
             tabs.getSelectionModel().select(tab);
             settings.addRecent(path);

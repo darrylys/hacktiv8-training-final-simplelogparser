@@ -12,6 +12,7 @@ import id.project.logs.simplelogparser.scan.EntryReader;
 import id.project.logs.simplelogparser.scan.ScanEngine;
 import id.project.logs.simplelogparser.scan.ScanSummary;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -77,7 +78,8 @@ public final class FileTab extends Tab {
         }
     }
 
-    public FileTab(Opened opened, ScanEngine engine, Executor background, IntSupplier resultCap) {
+    public FileTab(Opened opened, ScanEngine engine, Executor background, IntSupplier resultCap,
+                   BooleanProperty wordWrap) {
         this.opened = opened;
         Charset charset = StandardCharsets.UTF_8;
         ParseContext ctx = ParseContext.defaults();
@@ -86,7 +88,7 @@ public final class FileTab extends Tab {
         controller = new ScanController(engine, ui, opened.path(), opened.format(), ctx, resultCap);
         vm.formatProperty().set(opened.format());
         results = new ResultListView(controller.hits());
-        detail = new DetailPane(reader, background, ui, MatchBudget.DEFAULT_TIMEOUT);
+        detail = new DetailPane(reader, background, ui, MatchBudget.DEFAULT_TIMEOUT, wordWrap);
         clipboard = new ClipboardService(hit -> {
             ByteArrayOutputStream out = new ByteArrayOutputStream((int) Math.min(hit.byteLength(), Integer.MAX_VALUE - 8));
             reader.copyTo(hit, out);

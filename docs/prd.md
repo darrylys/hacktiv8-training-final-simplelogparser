@@ -75,6 +75,8 @@ Auto-detect from the first non-empty lines (JSON object vs. plain header). The u
 ### 5.5 Results
 - Each hit is the whole entry. Plain: header plus all continuation lines. JSON: the full original line.
 - GUI: a virtualized result list (entry summary: timestamp, level, logger, key ids) and a detail pane with the full entry. Matches are highlighted. Results stream in as they are found, and the user can cancel.
+- GUI detail pane, word wrap: a "Word wrap" checkbox wraps long lines (e.g. one-line JSON bodies) to the pane width. It is off by default, applies to all open tabs, and is remembered between sessions.
+- GUI detail pane, JSONC readability: inside JSON string values, the escapes `\n`, `\r` and `\t` are shown as real line breaks and tabs (`\r\n` as a single line break). Other escapes (`\"`, `\\`, `\/`, unicode escapes) and text outside strings are shown as written. Highlights stay on the right characters. This only changes the display: matching is unchanged (edge #9), and copying a whole entry still copies the original line with its escapes (5.6).
 - A result cap (default 10,000 entries) is configurable. When hit, the scan stops and the UI says so, so the user is not shown a silently truncated set.
 - CLI output: raw entries to stdout in file order; options `--count`, `--max-count N`, `--json` (one JSON object per hit, with byte offset and line number), `--no-color`.
 
@@ -110,7 +112,7 @@ Auto-detect from the first non-empty lines (JSON object vs. plain header). The u
 | 6 | Extremely large single entries (e.g. a multi-MB response body or a huge stack trace) | The entry is held in memory for matching and display, with a per-entry limit (default 16 MB). Over the limit, the entry is truncated for display and flagged `[truncated]`, and the match is evaluated on the truncated text. |
 | 7 | Very long lines (minified JSON, no newline for MBs) | Line reading uses a bounded buffer. A line over the entry limit is handled as in #6, not an `OutOfMemoryError`. |
 | 8 | JSONC: malformed line, blank line, truncated last line | Skipped with a warning count, shown at the end ("N malformed lines skipped"). Never aborts the scan. `--strict` aborts instead. |
-| 9 | JSONC: nested JSON in `message`, escaped `\n`, `\"`, unicode escapes | Text search runs on the decoded `message` value, plus the raw line when scope is All. Documented so users know `\\n` vs newline behavior. |
+| 9 | JSONC: nested JSON in `message`, escaped `\n`, `\"`, unicode escapes | Text search runs on the decoded `message` value, plus the raw line when scope is All. Documented so users know `\\n` vs newline behavior. In the GUI detail pane, `\n`, `\r` and `\t` inside string values of the raw line are displayed as line breaks and tabs (5.5); copying keeps the original escapes. |
 | 10 | Line endings: `\n`, `\r\n`, mixed | Normalized for matching. Copy preserves the original text. |
 | 11 | Encoding | Assume UTF-8; invalid bytes are replaced with U+FFFD, not fatal. BOM stripped. `--encoding` override. |
 | 12 | Empty file, a file with no valid entries, or a missing/unreadable file | Clear message and exit code 2 (CLI), or a dialog (GUI). Not a stack trace. |
@@ -163,6 +165,8 @@ Auto-detect from the first non-empty lines (JSON object vs. plain header). The u
 - AC19. In the GUI the user can open a file, run a field search, a text search and a regex search, view highlighted matches and select an entry.
 - AC20. Ctrl+C on a selected entry (or "Copy entry") puts its exact text on the system clipboard. Pasting into Notepad preserves line breaks and characters, including non-ASCII. Multi-select copies all selected entries in file order, separated by a blank line.
 - AC21. "Copy all results" over the size threshold asks for confirmation instead of silently freezing.
+- AC25. The detail pane's "Word wrap" checkbox wraps and unwraps long lines immediately. It is off on first start, and its last state is restored at the next start.
+- AC26. For a JSONC entry whose `message` contains `refund failed\nline two`, the detail pane shows the JSON line with a real line break between `failed` and `line two`, and no literal `\n`. An escaped backslash followed by `n` (`\\n`) is shown unchanged. Copying the entry puts the original line, including the `\n` escape, on the clipboard.
 
 **Robustness**
 - AC22. In JSONC, malformed lines are skipped and counted, and the scan completes. Entries before and after them are returned.
